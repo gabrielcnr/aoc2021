@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 from textwrap import dedent
 
 import aoc
@@ -37,9 +37,33 @@ def part1(data):
     return int(gamma, 2) * int(epsilon, 2)
 
 
+def part2(data):
+    numbers = data.strip().splitlines()
+    pos = 0
+    while len(numbers) > 1:
+        d = defaultdict(list)
+        for n in numbers:
+            if n[pos] == "1":
+                d["1"].append(n)
+            else:
+                d["0"].append(n)
+        if len(d["1"]) > len(d["0"]):
+            numbers = d["1"]
+        elif len(d["1"]) < len(d["0"]):
+            numbers = d["0"]
+        else:
+            numbers = d["1"]
+        pos += 1
+    num, = numbers
+    return int(num, 2)
+
+
+
 def test_part1():
     assert 198 == part1(test_input)
 
+def test_part2():
+    assert 230 == part2(test_input)
 
 if __name__ == '__main__':
     data = aoc.read_input(__file__)
