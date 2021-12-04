@@ -52,6 +52,7 @@ class Board:
         self.num_to_cell = {}
         self.cell_state = {}
         self.size = size
+        self._win = False
 
     @classmethod
     def create(cls, board: List[List[int]]):
@@ -69,18 +70,19 @@ class Board:
         return self.is_winner
 
     @property
-    def is_winner(self):
-        # check row-wise
-        for i in range(self.size):
-            if all(self.cell_state[i, j] for j in range(self.size)):
-                return True
+    def is_winner(self) -> bool:
+        if not self._win:
+            # check row-wise
+            for i in range(self.size):
+                if all(self.cell_state[i, j] for j in range(self.size)):
+                    self._win = True
 
-        # check column-wise
-        for j in range(self.size):
-            if all(self.cell_state[i, j] for i in range(self.size)):
-                return True
+            # check column-wise
+            for j in range(self.size):
+                if all(self.cell_state[i, j] for i in range(self.size)):
+                    self._win = True
 
-        return False
+        return self._win
 
     def get_sum_of_unmarked_numbers(self):
         return sum(n for n, cell in self.num_to_cell.items() if not self.cell_state[cell])
@@ -98,7 +100,22 @@ def part1(data):
                 unmarked_sum = board.get_sum_of_unmarked_numbers()
                 return num * unmarked_sum
 
-    raise
+
+def part2(data):
+    drawn_numbers, boards_data = bingo_parser(data)
+
+    boards = [Board.create(board_data) for board_data in boards_data]
+
+    for num in drawn_numbers:
+        # print(len(boards))
+        for board in boards:
+            board.check_num(num)
+
+        boards = [b for b in boards if not b.is_winner]  # still in the game
+
+        if not boards:  # the last board finally won!
+            unmarked_sum = board.get_sum_of_unmarked_numbers()
+            return num * unmarked_sum
 
 
 def test_bingo_parser():
@@ -116,6 +133,11 @@ def test_part1():
     assert 4512 == part1(test_input)
 
 
+def test_part2():
+    assert 1924 == part2(test_input)
+
+
 if __name__ == '__main__':
     data = aoc.read_input(__file__)
     print("Part 1", part1(data))
+    print("Part 2", part2(data))
