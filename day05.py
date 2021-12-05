@@ -83,10 +83,26 @@ def part1(data):
     return sum(1 for x in covered_points.values() if x > 1)
 
 
+def part2(data):
+    lines = parse(data)
+
+    covered_points = Counter()
+
+    for line in lines:
+        for point in line.points:
+            covered_points[point] += 1
+
+    return sum(1 for x in covered_points.values() if x > 1)
+
+
 def test_part1():
     assert 5 == part1(test_input)
 
 
+def test_part2():
+    assert 12 == part2(test_input)
+
 if __name__ == '__main__':
     data = aoc.read_input(__file__)
     print("Part 1", part1(data))
+    print("Part 2", part2(data))
